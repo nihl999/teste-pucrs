@@ -145,10 +145,12 @@ namespace teste_pucrs
             //Limita a busca para 10 participantes 
             //Não houve especificação de quantos registros, porem uma busca muito genérica retornaria muitos
             //Levando a codificação de nomes indesejados
-            if (students.Count > 10)
+            // if (students.Count > 10 || students.Count == 0)
+            // {
+            //Garante que o usuário especifique até que haja uma busca com menos de 10 Bolsistas
+            while (students.Count > 10 || students.Count == 0)
             {
-                //Garante que o usuário especifique até que haja uma busca com menos de 10 Bolsistas
-                while (students.Count > 10)
+                if (students.Count > 10)
                 {
                     Console.WriteLine("Muitos resultados na pesquisa, por favor seja mais especifico!");
                     Console.WriteLine();
@@ -156,23 +158,42 @@ namespace teste_pucrs
                     validString = Helpers.OnlyAlphabet(tempInput);
                     students = SearchByName(tempInput, ref scholars);
                 }
+                //Garante que o usuário digite um nome existente na base de Bolsistas
+                if (students.Count == 0)
+                {
+                    if (students.Count == 0 && validString)
+                        Console.WriteLine("Aluno não existente na base de dados, por favor verifique o nome!");
+                    else
+                        Console.WriteLine("Você não digitou um nome válido, tente novamente!");
+                    Console.WriteLine();
+                    tempInput = Console.ReadLine();
+                    validString = Helpers.OnlyAlphabet(tempInput);
+                    students = SearchByName(tempInput, ref scholars);
+                    //  }
+                }
             }
-            //Garante que o usuário digite um nome existente na base de Bolsistas
-            else if (students.Count == 0)
-            {
-                Console.WriteLine("Aluno não existente na base de dados, por favor verifique o nome!");
-                Console.WriteLine();
-                tempInput = Console.ReadLine();
-                validString = Helpers.OnlyAlphabet(tempInput);
-                students = SearchByName(tempInput, ref scholars);
-            }
+
+            // if (students.Count == 0)
+            // {
+            //     while (students.Count == 0)
+            //     {
+            //         if (students.Count == 0 && validString)
+            //             Console.WriteLine("Aluno não existente na base de dados, por favor verifique o nome!");
+            //         else
+            //             Console.WriteLine("Você não digitou um nome válido, tente novamente!");
+            //         Console.WriteLine();
+            //         tempInput = Console.ReadLine();
+            //         validString = Helpers.OnlyAlphabet(tempInput);
+            //         students = SearchByName(tempInput, ref scholars);
+            //     }
+            // }
 
             //Embaralha os nomes e depois encripta usando Cifra de César com 1 Shift para a direita
             var encryptedStudents = EncryptScholars(students);
 
             Console.WriteLine("|-------------------------------------------------");
             Console.WriteLine("|                                                 ");
-            Console.WriteLine("|          Os 10 bolsistas mais próximos          ");
+            Console.WriteLine("|          Os " + encryptedStudents.Count + " bolsistas mais próximos          ");
             Console.WriteLine("|             da sua pesquisa são:                ");
             Console.WriteLine("|                                                 ");
             Console.WriteLine("|-------------------------------------------------");
@@ -361,7 +382,7 @@ namespace teste_pucrs
             //Organiza a lista em ordem alfabetica
             students.Sort((x, y) => string.Compare(x.name, y.name));
             //Salva a lista em um txt, para testes
-            Helpers.SaveScholarshipToTXT("out.txt", ref students);
+            //Helpers.SaveScholarshipToTXT("out.txt", ref students);
             //Retorna os bolsistas.
             return students;
         }
@@ -437,7 +458,7 @@ namespace teste_pucrs
         {
             foreach (char c in testString)
             {
-                if (!char.IsLetter(c))
+                if (!char.IsLetter(c) && !char.IsWhiteSpace(c))
                     return false;
             }
             return true;

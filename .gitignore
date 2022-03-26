@@ -1,3 +1,4 @@
 bin/
 obj/
-resources/br-capes-bolsistas-uab.csv
+resources/*
+!resources/CSV-EXEMPLO.csv
